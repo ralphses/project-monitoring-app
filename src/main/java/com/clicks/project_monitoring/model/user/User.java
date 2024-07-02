@@ -1,8 +1,11 @@
-package com.clicks.project_monitoring.model;
+package com.clicks.project_monitoring.model.user;
 
 import com.clicks.project_monitoring.enums.UserRole;
+import com.clicks.project_monitoring.model.Comment;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Builder
@@ -10,6 +13,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
     @Id
@@ -22,4 +26,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    List<Comment> comments;
 }
