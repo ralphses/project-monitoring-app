@@ -24,4 +24,6 @@ public class Comment {
     private String content;
     private String reference;
     private LocalDateTime createdAt;
+
+    private String userReference;
 }

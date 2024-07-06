@@ -21,4 +21,6 @@ public class ProgressReport {
     private String reference;
     private String title;
     private String description;
+
+    private String userReference;
 }

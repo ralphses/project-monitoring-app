@@ -22,6 +22,8 @@ public class Task {
     private Long id;
 
     private String reference;
+    private String userReference;
+
     private String title;
     private String description;
     private EntityStatus status;

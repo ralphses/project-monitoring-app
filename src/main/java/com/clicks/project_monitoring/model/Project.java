@@ -19,6 +19,8 @@ public class Project {
     private Long id;
 
     private String reference;
+    private String userReference;
+
     private String title;
     private String description;
 

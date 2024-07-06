@@ -21,7 +21,9 @@ public class User {
     private Long id;
     private String reference;
     private String name;
+    private String phone;
     private String username;
+    private String email;
     private String password;
 
     @Enumerated(EnumType.STRING)
