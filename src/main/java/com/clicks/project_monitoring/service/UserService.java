@@ -1,21 +1,21 @@
 package com.clicks.project_monitoring.service;
 
 import com.clicks.project_monitoring.dtos.requests.auth.RegisterRequest;
-import com.clicks.project_monitoring.dtos.response.CommentDto;
-import com.clicks.project_monitoring.dtos.response.ProgressReportDto;
-import com.clicks.project_monitoring.dtos.response.TaskDto;
-import com.clicks.project_monitoring.dtos.response.user.UserDto;
-import com.clicks.project_monitoring.dtos.response.user.UserProfile;
+import com.clicks.project_monitoring.dtos.requests.user.AssignSupervisorRequest;
+import com.clicks.project_monitoring.dtos.requests.user.NewSupervisorRequest;
+import com.clicks.project_monitoring.dtos.response.user.AdminDto;
+import com.clicks.project_monitoring.dtos.response.user.AllStudentsResponse;
 import com.clicks.project_monitoring.dtos.response.user.UsersResponse;
 import com.clicks.project_monitoring.enums.UserRole;
+import com.clicks.project_monitoring.exceptions.InvalidParamException;
 import com.clicks.project_monitoring.exceptions.ResourceExistsException;
 import com.clicks.project_monitoring.exceptions.ResourceNotFoundException;
-import com.clicks.project_monitoring.model.Comment;
-import com.clicks.project_monitoring.model.ProgressReport;
-import com.clicks.project_monitoring.model.Project;
-import com.clicks.project_monitoring.model.Task;
+import com.clicks.project_monitoring.model.user.SecuredUser;
 import com.clicks.project_monitoring.model.user.Student;
 import com.clicks.project_monitoring.model.user.User;
+import com.clicks.project_monitoring.repositories.AdminRepository;
+import com.clicks.project_monitoring.repositories.StudentRepository;
+import com.clicks.project_monitoring.repositories.SupervisorRepository;
 import com.clicks.project_monitoring.repositories.UserRepository;
 import com.clicks.project_monitoring.utils.DtoMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,78 +24,83 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final AdminRepository adminRepository;
+    private final SupervisorRepository supervisorRepository;
+
     private final DtoMapper mapper;
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public User findUserByReference(String userReference, UserRole role) {
+        return switch (role) {
+            case ADMIN -> adminRepository.findByUserId(userReference)
+                    .orElseThrow(() -> new ResourceNotFoundException("Admin User not found"));
+            case STUDENT -> studentRepository.findByUserId(userReference)
+                    .orElseThrow(() -> new ResourceNotFoundException("Student User not found"));
+            case SUPERVISOR -> supervisorRepository.findByUserId(userReference)
+                    .orElseThrow(() -> new ResourceNotFoundException("Supervisor User not found"));
+        };
     }
 
-    public UsersResponse getUsers(Integer page) {
-        Pageable pageable = PageRequest.of(Math.max(0, page-1), 10);
-        Page<User> allUsers = userRepository.findAll(pageable);
-        List<UserDto> users = allUsers
-                .stream()
-                .map(mapper::userToUserDto)
-                .toList();
+    public UsersResponse getUsers(Integer page, String type) {
 
-        return new UsersResponse(allUsers.getTotalPages(), allUsers.getTotalElements(), users);
+        UserRole role = getUserRole(type);
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), 10);
+
+        Page<AdminDto> allUsers = switch (role) {
+            case ADMIN -> adminRepository.findAll(pageable).map(mapper::adminDto);
+            case STUDENT -> studentRepository.findAll(pageable).map(mapper::studentDto);
+            case SUPERVISOR -> supervisorRepository.findAll(pageable).map(mapper::supervisorDto);
+        };
+
+        return new UsersResponse(allUsers.getTotalPages(), allUsers.getTotalElements(), allUsers.stream().toList());
 
     }
 
-    public boolean checkExist(String username) {
-        return userRepository.existsByUsername(username);
+    private UserRole getUserRole(String type) {
+        try {
+            return UserRole.valueOf(type.trim().toUpperCase().replace(" ", "_"));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParamException("Invalid user type");
+        }
     }
 
-    public User register(RegisterRequest registerRequest) {
-        if(!checkExist(registerRequest.username())) {
-            Student student = new Student();
-            student.setUsername(registerRequest.username());
-            student.setReference(UUID.randomUUID().toString());
-            student.setPassword(registerRequest.password());
-            student.setEmail(registerRequest.email());
-            student.setRole(UserRole.STUDENT);
-            student.setComments(new ArrayList<>());
-            student.setName(registerRequest.name());
+    public boolean checkStudentExist(String matric) {
+        return userRepository.existsByUsername(matric);
+    }
 
-            return userRepository.save(student);
+    public Student register(RegisterRequest registerRequest) {
+
+        if (!checkStudentExist(registerRequest.username())) {
+
+            SecuredUser newUser = new SecuredUser(registerRequest.username(), registerRequest.password(), UserRole.STUDENT);
+            SecuredUser savedSecuredUser = userRepository.save(newUser);
+
+            Student student = new Student(registerRequest.name(), savedSecuredUser.getReference());
+            return studentRepository.save(student);
         }
         throw new ResourceExistsException("Username already exists");
     }
 
-    public UserProfile getUser(String username) {
-        User user = findByUsername(username);
-        if(user instanceof Student) {
-            Student student = (Student) user;
 
-            Project studentProject = student.getProject();
-
-            List<TaskDto> tasks = studentProject.getTasks()
-                    .stream()
-                    .map(mapper::taskDto)
-                    .toList();
-
-            List<ProgressReportDto> progressReports = studentProject.getProgressReports()
-                    .stream()
-                    .map(mapper::progressReportDto)
-                    .toList();
-
-            List<CommentDto> comments = user.getComments()
-                    .stream()
-                    .map(mapper::commentToCommentDto)
-                    .toList();
-
-        }
+    public AllStudentsResponse getStudents(Integer page, String supervisor) {
         return null;
+    }
+
+    public String addSupervisor(NewSupervisorRequest request) {
+        return null;
+    }
+
+    public String assignSupervisor(AssignSupervisorRequest request) {
+        return null;
+    }
+
+    public SecuredUser findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

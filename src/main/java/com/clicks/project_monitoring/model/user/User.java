@@ -1,34 +1,32 @@
 package com.clicks.project_monitoring.model.user;
 
-import com.clicks.project_monitoring.enums.UserRole;
-import com.clicks.project_monitoring.model.Comment;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-@Entity
-@Builder
 @Getter
-@Setter
-@AllArgsConstructor
+@MappedSuperclass
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+public abstract class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String reference;
-    private String name;
-    private String phone;
-    private String username;
-    private String email;
-    private String password;
+    protected Long id;
+    protected String userId;
+    protected String name;
+    protected String phone;
+    protected String email;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @ElementCollection
+    @CollectionTable(name = "user_notifications")
+    protected Set<String> notifications;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<Comment> comments;
+    public User(String userReference, String name) {
+        this.notifications = new HashSet<>();
+        this.userId = userReference;
+        this.name = name;
+    }
 }

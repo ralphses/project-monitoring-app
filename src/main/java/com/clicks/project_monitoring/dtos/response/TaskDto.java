@@ -1,14 +1,14 @@
 package com.clicks.project_monitoring.dtos.response;
 
-import com.clicks.project_monitoring.enums.EntityStatus;
-
-import java.time.LocalDateTime;
+import java.util.List;
 
 public record TaskDto(
+        String reference,
         String title,
         String description,
         String status,
         String createdAt,
-        String expectedDeliveryDate
+        String expectedDeliveryDate,
+        List<CommentDto> comments
 ) {
 }

@@ -4,8 +4,6 @@ import com.clicks.project_monitoring.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Builder
 @Getter
 @Setter
@@ -23,14 +21,12 @@ public class Project {
 
     private String title;
     private String description;
+    private String projectFile;
 
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<Task> tasks;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    List<ProgressReport> progressReports;
+    @OneToOne
+    private ProgressReport progressReport;
 
 }

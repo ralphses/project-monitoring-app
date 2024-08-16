@@ -1,10 +1,9 @@
 package com.clicks.project_monitoring.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Builder
 @Getter
@@ -12,15 +11,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 public class ProgressReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reference;
-    private String title;
-    private String description;
+    @OneToMany
+    private List<ProgressReportStage> stages;
 
-    private String userReference;
 }

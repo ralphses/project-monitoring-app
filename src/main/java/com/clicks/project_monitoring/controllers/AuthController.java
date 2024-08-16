@@ -2,7 +2,7 @@ package com.clicks.project_monitoring.controllers;
 
 import com.clicks.project_monitoring.dtos.requests.auth.LoginRequest;
 import com.clicks.project_monitoring.dtos.requests.auth.RegisterRequest;
-import com.clicks.project_monitoring.dtos.response.user.UserProfile;
+import com.clicks.project_monitoring.dtos.response.user.AdminDto;
 import com.clicks.project_monitoring.service.AuthService;
 import com.clicks.project_monitoring.utils.CustomResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ public class AuthController {
 
     @PostMapping("login")
     public CustomResponse login(@RequestBody LoginRequest loginRequest) {
-        UserProfile profile = authService.login(loginRequest);
+        AdminDto profile = authService.login(loginRequest);
         return new CustomResponse(true, profile);
     }
 
     @PostMapping("register")
     public CustomResponse register(@RequestBody RegisterRequest registerRequest) {
-        UserProfile profile = authService.register(registerRequest);
+        AdminDto profile = authService.register(registerRequest);
         return new CustomResponse(true, profile);
     }
 }

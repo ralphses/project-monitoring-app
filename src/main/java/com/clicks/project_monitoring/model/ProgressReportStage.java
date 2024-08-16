@@ -1,6 +1,5 @@
 package com.clicks.project_monitoring.model;
 
-import com.clicks.project_monitoring.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,24 +12,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString
-public class Task {
+public class ProgressReportStage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String reference;
-
-    private String title;
-    private String description;
-
-    @Enumerated(EnumType.STRING)
-    private EntityStatus status;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime expectedDeliveryDate;
+    private String name;
+    private boolean completed;
+    private LocalDateTime completionDate;
+    private int level;
 
     @OneToMany(fetch = FetchType.LAZY)
-    List<Comment> comments;
+    List<Task> tasks;
 }

@@ -2,18 +2,17 @@ package com.clicks.project_monitoring.service;
 
 import com.clicks.project_monitoring.dtos.requests.auth.LoginRequest;
 import com.clicks.project_monitoring.dtos.requests.auth.RegisterRequest;
-import com.clicks.project_monitoring.dtos.response.user.UserDto;
-import com.clicks.project_monitoring.dtos.response.user.UserProfile;
-import com.clicks.project_monitoring.enums.UserRole;
+import com.clicks.project_monitoring.dtos.response.user.AdminDto;
+import com.clicks.project_monitoring.dtos.response.user.StudentDto;
 import com.clicks.project_monitoring.exceptions.UnauthorizedUserException;
+import com.clicks.project_monitoring.model.user.Admin;
+import com.clicks.project_monitoring.model.user.SecuredUser;
 import com.clicks.project_monitoring.model.user.Student;
-import com.clicks.project_monitoring.model.user.User;
+import com.clicks.project_monitoring.model.user.Supervisor;
 import com.clicks.project_monitoring.utils.DtoMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -22,21 +21,31 @@ public class AuthService {
     private final UserService userService;
     private final DtoMapper mapper;
 
-    public UserProfile login(LoginRequest loginRequest) {
+    @Transactional
+    public AdminDto login(LoginRequest loginRequest) {
 
-        User user = userService.findByUsername(loginRequest.username());
+        SecuredUser securedUser = userService.findByUsername(loginRequest.username());
 
-        if (user.getPassword().equals(loginRequest.password())) {
-
-            UserDto userDto = mapper.userToUserDto(user);
-            return new UserProfile(userDto);
+        if (!securedUser.getPassword().equals(loginRequest.password())) {
+            throw new UnauthorizedUserException("Invalid username or password");
         }
-        throw new UnauthorizedUserException("Invalid username or password");
+
+        return getUserDtoByRole(securedUser);
+    }
+
+    private AdminDto getUserDtoByRole(SecuredUser securedUser) {
+        Object user = userService.findUserByReference(securedUser.getUsername(), securedUser.getRole());
+        return switch (securedUser.getRole()) {
+            case STUDENT -> mapper.studentDto((Student) user);
+            case SUPERVISOR -> mapper.supervisorDto((Supervisor) user);
+            case ADMIN -> mapper.adminDto((Admin) user);
+        };
     }
 
     @Transactional
-    public UserProfile register(RegisterRequest registerRequest) {
-        User registeredUser = userService.register(registerRequest);
-        return new UserProfile(mapper.userToUserDto(registeredUser));
+    public StudentDto register(RegisterRequest registerRequest) {
+        Student student = userService.register(registerRequest);
+        return mapper.studentDto(student);
     }
+
 }

@@ -1,4 +1,4 @@
-package com.clicks.project_monitoring.model.user;
+package com.clicks.project_monitoring.repositories;
 
 import com.clicks.project_monitoring.model.Project;
 import org.springframework.data.jpa.repository.JpaRepository;

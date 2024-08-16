@@ -24,8 +24,9 @@ public class CustomExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ResourceExistsException.class)
+    @ExceptionHandler({ResourceExistsException.class, InvalidParamException.class})
     public CustomResponse handleResourceExistsException(RuntimeException exception) {
         return new CustomResponse(false, exception.getMessage());
     }
+
 }
