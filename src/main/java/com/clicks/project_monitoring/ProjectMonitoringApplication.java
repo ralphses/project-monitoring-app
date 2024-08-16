@@ -132,26 +132,24 @@ public class ProjectMonitoringApplication {
 			Comment taskComment = Comment.builder()
 					.content(faker.lorem().sentence(26))
 					.createdAt(LocalDateTime.now())
-					.userReference(supervisorUser.getUserId())
+					.user(supervisorUser.getName())
 					.reference(UUID.randomUUID().toString())
 					.build();
 
 			Comment saved = commentRepository.save(taskComment);
 			task2.getComments().add(saved);
 
-
-
 			Comment comment = Comment.builder()
 					.content(faker.lorem().sentence(26))
 					.createdAt(LocalDateTime.now())
-					.userReference(supervisorUser.getUserId())
+					.user(supervisorUser.getName())
 					.reference(UUID.randomUUID().toString())
 					.build();
 
 			Comment comment2 = Comment.builder()
 					.content(faker.lorem().sentence(26))
 					.createdAt(LocalDateTime.now())
-					.userReference(supervisorUser.getUserId())
+					.user(supervisorUser.getName())
 					.reference(UUID.randomUUID().toString())
 					.build();
 
@@ -159,14 +157,6 @@ public class ProjectMonitoringApplication {
 			task2.getComments().addAll(commentRepository.saveAll(List.of(comment, comment2)));
 
 			taskRepository.saveAll(List.of(task, task2));
-//
-//
-//			projectRepository.save(project);
-//
-//
-//			userRepository.save(studentUser);
-//
-//			userRepository.saveAll(List.of(adminUser, supervisorUser));
 
 		};
 	}

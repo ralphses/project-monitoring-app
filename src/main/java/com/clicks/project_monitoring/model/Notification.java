@@ -1,6 +1,5 @@
 package com.clicks.project_monitoring.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,24 +8,21 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Builder
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Comment {
+@NoArgsConstructor
+@Entity
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String reference;
-    private String taskReference;
-
-    private String content;
-    private LocalDateTime createdAt;
-
-    private String user;
+    private String message;
+    private String sender;
+    private String receiver;
+    private LocalDateTime timestamp;
 }

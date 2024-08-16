@@ -13,4 +13,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 //    Page<Task> findAllByUserReferenceIn(List<String> references, Pageable pageable);
 
     Optional<Task> findByReference(String reference);
+    boolean existsByReference(String reference);
 }

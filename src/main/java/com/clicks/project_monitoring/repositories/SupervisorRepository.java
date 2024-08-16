@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface SupervisorRepository extends JpaRepository<Supervisor, Long> {
     Optional<Supervisor> findByUserId(String userId);
+    boolean existsByUserId(String userId);
 
 }

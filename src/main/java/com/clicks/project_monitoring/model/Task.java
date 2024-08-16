@@ -21,6 +21,7 @@ public class Task {
     private Long id;
 
     private String reference;
+    private String stageReference;
 
     private String title;
     private String description;

@@ -12,6 +12,7 @@ import com.clicks.project_monitoring.exceptions.ResourceExistsException;
 import com.clicks.project_monitoring.exceptions.ResourceNotFoundException;
 import com.clicks.project_monitoring.model.user.SecuredUser;
 import com.clicks.project_monitoring.model.user.Student;
+import com.clicks.project_monitoring.model.user.Supervisor;
 import com.clicks.project_monitoring.model.user.User;
 import com.clicks.project_monitoring.repositories.AdminRepository;
 import com.clicks.project_monitoring.repositories.StudentRepository;
@@ -45,6 +46,7 @@ public class UserService {
                     .orElseThrow(() -> new ResourceNotFoundException("Supervisor User not found"));
         };
     }
+
 
     public UsersResponse getUsers(Integer page, String type) {
 
@@ -88,19 +90,46 @@ public class UserService {
 
 
     public AllStudentsResponse getStudents(Integer page, String supervisor) {
-        return null;
+        Page<Student> studentPage = studentRepository
+                .findAllBySupervisor(supervisor, PageRequest.of(Math.max(0, (page - 1)), 10));
+
+        return new AllStudentsResponse(
+                studentPage.getTotalPages(),
+                studentPage.getTotalElements(),
+                studentPage.map(mapper::studentDto).toList());
     }
 
     public String addSupervisor(NewSupervisorRequest request) {
-        return null;
+        if(!userRepository.existsByUsername(request.userName())) {
+            SecuredUser user = new SecuredUser(request.userName(), request.password(), UserRole.SUPERVISOR);
+            SecuredUser savedUser = userRepository.save(user);
+
+            Supervisor newSupervisor = new Supervisor(request.name(), savedUser.getReference());
+            supervisorRepository.save(newSupervisor);
+        }
+        return "Supervisor added successfully";
     }
 
     public String assignSupervisor(AssignSupervisorRequest request) {
-        return null;
+        Student student = getStudent(request.student());
+        Supervisor supervisor = supervisorRepository.findByUserId(request.supervisor())
+                .orElseThrow(() -> new ResourceNotFoundException("Supervisor not found"));
+        supervisor.getStudents().add(student);
+        student.setSupervisor(request.supervisor());
+        return "Supervisor assigned successfully";
+    }
+
+    public Student getStudent(String studentReference) {
+        return studentRepository.findByUserId(studentReference)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
     }
 
     public SecuredUser findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    public String findUserName(String userReference) {
+        return userRepository.findUserName(userReference);
     }
 }

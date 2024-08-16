@@ -1,74 +1,57 @@
 package com.clicks.project_monitoring.service;
 
 import com.clicks.project_monitoring.dtos.requests.task.CreateTaskRequest;
-import com.clicks.project_monitoring.dtos.response.AllTasks;
-import com.clicks.project_monitoring.dtos.response.TaskDto;
+import com.clicks.project_monitoring.dtos.requests.task.NewTask;
 import com.clicks.project_monitoring.enums.EntityStatus;
 import com.clicks.project_monitoring.exceptions.InvalidParamException;
 import com.clicks.project_monitoring.exceptions.ResourceNotFoundException;
+import com.clicks.project_monitoring.model.ProgressReportStage;
 import com.clicks.project_monitoring.model.Task;
 import com.clicks.project_monitoring.repositories.TaskRepository;
-import com.clicks.project_monitoring.utils.DtoMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private final UserService userService;
-    private final DtoMapper mapper;
-    private final CommentService commentService;
+    private final ProgressReportStageService progressReportStageService;
 
-
-    public AllTasks getAll(int page, String userReference, String progressStage) {
-
-//        PageRequest pageRequest = PageRequest.of(Math.max(0, page - 1), 10);
-//        Page<Task> taskPage;
-//
-//        if (Objects.nonNull(userReference)) {
-//            User user = userService.findByUserReference(userReference);
-//
-//            if (user instanceof Student) {
-//                taskPage = taskRepository.findAllByUserReferenceOrderByCreatedAtDesc(pageRequest, userReference);
-//            } else if (user instanceof Supervisor supervisor) {
-//                List<String> studentReferences = supervisor.getStudents().stream()
-//                        .map(User::getReference)
-//                        .collect(Collectors.toList());
-//                taskPage = taskRepository.findAllByUserReferenceIn(studentReferences, pageRequest);
-//            } else {
-//                throw new UnauthorizedUserException("Not authorized user");
-//            }
-//        } else {
-//            taskPage = taskRepository.findAll(pageRequest);
-//        }
-
-//        return new AllTasks(
-//                taskPage.getTotalPages(),
-//                taskPage.getTotalElements(),
-//                taskPage.getContent().stream()
-//                        .map(mapper::taskToTaskDto)
-//                        .collect(Collectors.toList())
-//        );
-        return null;
-    }
 
     @Transactional
     public String updateStatus(String taskRef, String status) {
         Task task = findByReference(taskRef);
 
         if (task == null) {
-            throw new InvalidParamException("Invalid task reference");
+            throw new InvalidParamException("Invalid task project reference");
         }
 
+        if (task.getStatus().equals(EntityStatus.COMPLETED)) {
+            throw new InvalidParamException("Task already completed");
+        }
+
+        EntityStatus newStatus = getStatus(status);
+
+        task.setStatus(newStatus);
+
+        if (newStatus.equals(EntityStatus.COMPLETED)) {
+            progressReportStageService.updateLevel(task.getStageReference());
+        }
+
+        return "Task updated successfully";
+    }
+
+    private EntityStatus getStatus(String status) {
         try {
-            EntityStatus taskStatus = EntityStatus.valueOf(status.toUpperCase().replace(" ", "_"));
-            task.setStatus(taskStatus);
-            return status;
+            return EntityStatus.valueOf(status.toUpperCase().replace(" ", "_"));
         } catch (IllegalArgumentException e) {
             throw new InvalidParamException("Invalid status. Use any of " + Arrays.toString(EntityStatus.values()));
         }
@@ -79,21 +62,40 @@ public class TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
 
-    public TaskDto getOne(String taskRef) {
-//        return mapper.taskToTaskDto(findByReference(taskRef));
-        return null;
-    }
 
-    public TaskDto addComment(String taskRef, String comment) {
-
-        return null;
-    }
-
+    @Transactional
     public String create(CreateTaskRequest request) {
-        return null;
+        ProgressReportStage stage = progressReportStageService.getStage(request.stageReference());
+        List<Task> savedTasks = request.tasks().stream()
+                .map(newTask -> createNew(newTask, request.stageReference()))
+                .toList();
+        stage.getTasks().addAll(savedTasks);
+        stage.incrementTaskCount(savedTasks.size());
+        return "Task(s) added successfully";
     }
 
-    public String changeStatus(String task, String status) {
-        return null;
+    private Task createNew(NewTask newTask, String stageReference) {
+        Task task = Task.builder()
+                .stageReference(stageReference)
+                .description(newTask.description())
+                .createdAt(LocalDateTime.now())
+                .title(newTask.title())
+                .comments(new ArrayList<>())
+                .expectedDeliveryDate(parseDate(newTask.expectedCompletionDate()))
+                .status(EntityStatus.INITIATED)
+                .build();
+        return taskRepository.save(task);
+    }
+
+    private LocalDateTime parseDate(String date) {
+        try {
+            return LocalDateTime.parse(date);
+        }catch (DateTimeParseException e) {
+            throw new InvalidParamException("Invalid date: Use either \"yyyy-MM-dd\" or \"yyyy-MM-dd HH:mm:ss\".");
+        }
+    }
+
+    public boolean existByReference(String taskReference) {
+        return taskRepository.existsByReference(taskReference);
     }
 }

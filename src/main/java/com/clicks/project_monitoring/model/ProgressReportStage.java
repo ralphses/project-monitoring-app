@@ -23,7 +23,12 @@ public class ProgressReportStage {
     private boolean completed;
     private LocalDateTime completionDate;
     private int level;
+    private int totalTasks;
 
     @OneToMany(fetch = FetchType.LAZY)
     List<Task> tasks;
+
+    public void incrementTaskCount(int size) {
+        this.totalTasks = this.totalTasks + size;
+    }
 }

@@ -1,4 +1,6 @@
 package com.clicks.project_monitoring.dtos.response;
 
-public record AllProjectResponse() {
+import java.util.List;
+
+public record AllProjectResponse(int totalPages, long totalElements, List<ProjectDto> projects) {
 }

@@ -5,10 +5,7 @@ import com.clicks.project_monitoring.dtos.requests.auth.RegisterRequest;
 import com.clicks.project_monitoring.dtos.response.user.AdminDto;
 import com.clicks.project_monitoring.dtos.response.user.StudentDto;
 import com.clicks.project_monitoring.exceptions.UnauthorizedUserException;
-import com.clicks.project_monitoring.model.user.Admin;
-import com.clicks.project_monitoring.model.user.SecuredUser;
-import com.clicks.project_monitoring.model.user.Student;
-import com.clicks.project_monitoring.model.user.Supervisor;
+import com.clicks.project_monitoring.model.user.*;
 import com.clicks.project_monitoring.utils.DtoMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +31,8 @@ public class AuthService {
     }
 
     private AdminDto getUserDtoByRole(SecuredUser securedUser) {
-        Object user = userService.findUserByReference(securedUser.getUsername(), securedUser.getRole());
+
+        User user = userService.findUserByReference(securedUser.getReference(), securedUser.getRole());
         return switch (securedUser.getRole()) {
             case STUDENT -> mapper.studentDto((Student) user);
             case SUPERVISOR -> mapper.supervisorDto((Supervisor) user);

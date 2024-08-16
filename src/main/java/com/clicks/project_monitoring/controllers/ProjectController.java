@@ -4,6 +4,9 @@ import com.clicks.project_monitoring.dtos.response.AllProjectResponse;
 import com.clicks.project_monitoring.service.ProjectService;
 import com.clicks.project_monitoring.utils.CustomResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,12 +24,6 @@ public class ProjectController {
         return new CustomResponse(true, response);
     }
 
-    @GetMapping("supervisor")
-    public CustomResponse getAllSupervisorProjects(@RequestParam(value = "page", defaultValue = "1") Integer page) {
-        AllProjectResponse response = projectService.getAllSupervisorProjects(page);
-        return new CustomResponse(true, response);
-    }
-
     @PutMapping("{studentMatric}")
     public CustomResponse uploadProjectFile(
             @PathVariable String studentMatric,
@@ -35,9 +32,12 @@ public class ProjectController {
         return new CustomResponse(true, response);
     }
 
-    @GetMapping("file")
-    public CustomResponse getProjectFile(@RequestParam(value = "project") String project) {
-        AllProjectResponse response = projectService.getProjectFile(project);
-        return new CustomResponse(true, response);
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("projectReference") String projectReference) {
+        Resource resource = projectService.getProjectFile(projectReference);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }

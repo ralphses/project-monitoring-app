@@ -1,22 +1,23 @@
 package com.clicks.project_monitoring.utils;
 
-import com.clicks.project_monitoring.dtos.response.ProjectDto;
+import com.clicks.project_monitoring.dtos.response.*;
 import com.clicks.project_monitoring.dtos.response.user.AdminDto;
 import com.clicks.project_monitoring.dtos.response.user.StudentDto;
 import com.clicks.project_monitoring.dtos.response.user.SupervisorDto;
 import com.clicks.project_monitoring.enums.UserRole;
-import com.clicks.project_monitoring.model.Project;
+import com.clicks.project_monitoring.model.*;
 import com.clicks.project_monitoring.model.user.Admin;
 import com.clicks.project_monitoring.model.user.Student;
 import com.clicks.project_monitoring.model.user.Supervisor;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Component
 public class DtoMapper {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd:h:sa");
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd:h:sa");
 
     public AdminDto adminDto(Admin admin) {
         return new AdminDto(
@@ -36,13 +37,14 @@ public class DtoMapper {
                 supervisor.getStudents().stream().map(this::studentDto).toList()
         );
     }
-    public StudentDto studentDto (Student student) {
+
+    public StudentDto studentDto(Student student) {
         return new StudentDto(
                 student.getUserId(),
                 student.getName(),
                 student.getEmail(),
                 UserRole.STUDENT.name(),
-                projectDto(student.getProject()),
+                Objects.nonNull(student.getProject()) ? projectDto(student.getProject()) : null,
                 student.getSupervisor()
         );
     }
@@ -58,7 +60,30 @@ public class DtoMapper {
 
     }
 
-//    public UserDto userToUserDto(User user) {
+    public ProgressReportDto progressReportDto(ProgressReport progressReport) {
+        return new ProgressReportDto(
+                progressReport.getReference(),
+                progressReport.getStages().stream()
+                        .map(this::progressReportStageDto)
+                        .toList()
+        );
+    }
+
+    public ProgressReportStageDto progressReportStageDto(ProgressReportStage progressReportStage) {
+        return new ProgressReportStageDto(
+                progressReportStage.getReference(),
+                progressReportStage.getName(),
+                progressReportStage.isCompleted(),
+                progressReportStage.getCompletionDate().format(DATE_FORMATTER),
+                progressReportStage.getLevel(),
+                progressReportStage.getTasks().stream()
+                        .map(this::taskToTaskDto)
+                        .toList()
+        );
+    }
+
+
+    //    public UserDto userToUserDto(User user) {
 //        if (user instanceof Student student) {
 //            StudentDto studentDto = studentToStudentDto(student);
 //            System.out.println("studentDto = " + studentDto);
@@ -119,13 +144,14 @@ public class DtoMapper {
 //                        .orElse(null));
 //    }
 //
-//    public CommentDto commentToCommentDto(Comment comment) {
-//        return new CommentDto(
-//                comment.getReference(),
-//                comment.getContent(),
-//                comment.getCreatedAt().format(DATE_FORMATTER));
-//    }
-//
+    public CommentDto commentToCommentDto(Comment comment) {
+        return new CommentDto(
+                comment.getReference(),
+                comment.getContent(),
+                comment.getCreatedAt().format(DATE_FORMATTER));
+    }
+
+    //
 //    public ProgressReportDto progressReportToProgressReportDto(ProgressReport progressReport) {
 //        return new ProgressReportDto(
 //                progressReport.getReference(),
@@ -133,16 +159,18 @@ public class DtoMapper {
 //                progressReport.getDescription());
 //    }
 //
-//    public TaskDto taskToTaskDto(Task task) {
-//        return new TaskDto(
-//                task.getReference(),
-//                task.getTitle(),
-//                task.getDescription(),
-//                task.getStatus().name(),
-//                task.getCreatedAt().format(DATE_FORMATTER),
-//                task.getExpectedDeliveryDate().format(DATE_FORMATTER),
-//                task.getComments().stream().map(this::commentToCommentDto).toList());
-//    }
+    public TaskDto taskToTaskDto(Task task) {
+        return new TaskDto(
+                task.getReference(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus().name(),
+                task.getCreatedAt().format(DATE_FORMATTER),
+                task.getExpectedDeliveryDate().format(DATE_FORMATTER),
+                task.getComments().stream()
+                        .map(this::commentToCommentDto)
+                        .toList());
+    }
 //
 //    public ProjectDto projectToProjectDto(Project project) {
 //        return new ProjectDto(
