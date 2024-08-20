@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ProgressReportStageRepository extends JpaRepository<ProgressReportStage, Long> {
     Optional<ProgressReportStage> findByReference(String reference);
+    boolean existsByReference(String reference);
 }

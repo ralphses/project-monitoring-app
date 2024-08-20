@@ -8,7 +8,7 @@ import com.clicks.project_monitoring.utils.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")

@@ -7,7 +7,7 @@ import com.clicks.project_monitoring.utils.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/comments")
@@ -26,7 +26,9 @@ public class CommentController {
 
     @PostMapping
     public CustomResponse addComment(@RequestBody NewCommentRequest request) {
+        System.out.println(request);
         String response = commentService.save(request);
         return new CustomResponse(true, response);
     }
+
 }

@@ -1,12 +1,15 @@
 package com.clicks.project_monitoring.controllers;
 
 import com.clicks.project_monitoring.dtos.requests.task.CreateTaskRequest;
+import com.clicks.project_monitoring.dtos.response.TaskDto;
 import com.clicks.project_monitoring.service.TaskService;
 import com.clicks.project_monitoring.utils.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+import java.util.List;
+
+@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/tasks")
@@ -26,6 +29,18 @@ public class TaskController {
     public CustomResponse create(@RequestBody CreateTaskRequest request) {
         String response = taskService.create(request);
         return new CustomResponse(true, response);
+    }
+
+    @GetMapping
+    public CustomResponse getAll(@RequestParam("stageReference") String stageReference) {
+        List<TaskDto> tasks = taskService.getTasksForStage(stageReference);
+        return new CustomResponse(true, tasks);
+    }
+
+    @GetMapping("{taskReference}")
+    public CustomResponse getTask(@PathVariable String taskReference) {
+        TaskDto task = taskService.getTask(taskReference);
+        return new CustomResponse(true, task);
     }
 
     @PutMapping

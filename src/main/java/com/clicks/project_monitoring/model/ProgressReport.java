@@ -18,7 +18,7 @@ public class ProgressReport {
     private Long id;
     private String reference;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<ProgressReportStage> stages;
 
 }

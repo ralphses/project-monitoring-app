@@ -10,7 +10,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,15 +31,22 @@ public class ProgressReportService {
     }
 
     public ProgressReport create(List<ProgressReportStage> stages, String projectReference) {
-        Project project = projectService.getProjectByReference(projectReference);
-        ProgressReport progressReport = ProgressReport.builder()
-                .reference(UUID.randomUUID().toString())
-                .stages(stages)
-                .build();
 
-        //create progress report for this project with the stages
-        ProgressReport saved = progressReportRepository.save(progressReport);
-        project.setProgressReport(saved);
-        return saved;
+        Project project = projectService.getProjectByReference(projectReference);
+
+        ProgressReport progressReport = Optional.ofNullable(project.getProgressReport())
+                .orElseGet(() -> {
+                    ProgressReport newReport = ProgressReport.builder()
+                            .reference(UUID.randomUUID().toString())
+                            .stages(new ArrayList<>())
+                            .build();
+                    project.setProgressReport(newReport);
+                    return progressReportRepository.save(newReport);
+                });
+
+        progressReport.getStages().addAll(stages);
+        return progressReportRepository.save(progressReport);
     }
+
+
 }

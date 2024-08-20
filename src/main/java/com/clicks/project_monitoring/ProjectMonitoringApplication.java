@@ -41,123 +41,128 @@ public class ProjectMonitoringApplication {
 		return args -> {
 
 			// Seed users
-			SecuredUser studentSecuredUser = userRepository.save(
-					new SecuredUser(
-							"student",
-							"password",
-							UserRole.STUDENT));
-
-			SecuredUser adminSecuredUser = userRepository.save(
-					new SecuredUser(
-							"admin",
-							"password",
-							UserRole.ADMIN));
-
-			SecuredUser supervisorSecuredUser = userRepository.save(
-					new SecuredUser(
-							"supervisor",
-							"password",
-							UserRole.SUPERVISOR));
-
-
-			Student studentUser = new Student("student name", studentSecuredUser.getReference());
-
-
-			Task task = Task.builder()
-					.description(faker.lorem().sentence(20))
-					.title(faker.lorem().sentence(5))
-					.createdAt(LocalDateTime.now())
-					.expectedDeliveryDate(LocalDateTime.now().plusDays(1))
-					.status(EntityStatus.INITIATED)
-					.reference(UUID.randomUUID().toString())
-					.comments(new ArrayList<>())
-					.build();
-
-			Task task2 = Task.builder()
-					.description(faker.lorem().sentence(20))
-					.title(faker.lorem().sentence(5))
-					.createdAt(LocalDateTime.now())
-					.expectedDeliveryDate(LocalDateTime.now().plusDays(1))
-					.status(EntityStatus.INITIATED)
-					.reference(UUID.randomUUID().toString())
-					.comments(new ArrayList<>())
-					.build();
-
-			List<Task> savedTasks = taskRepository.saveAll(List.of(task, task2));
-
-			ProgressReportStage stage1 = ProgressReportStage.builder()
-					.name("Chapter 1")
-					.tasks(new ArrayList<>(List.of(savedTasks.get(0))))
-					.reference(UUID.randomUUID().toString())
-					.build();
-
-			ProgressReportStage stage2 = ProgressReportStage.builder()
-					.name("Chapter 2")
-					.tasks(new ArrayList<>(List.of(savedTasks.get(1))))
-					.reference(UUID.randomUUID().toString())
-					.build();
-			List<ProgressReportStage> progressReportStages = progressReportStageRepository.saveAll(List.of(stage1, stage2));
-
-			ProgressReport progressReport = ProgressReport.builder()
-					.stages(progressReportStages)
-					.build();
-
-			ProgressReport savedReport = progressReportRepository.save(progressReport);
-
-			Project project = Project.builder()
-					.description(faker.lorem().sentence(25))
-					.title(faker.lorem().sentence(5))
-					.status(EntityStatus.INITIATED)
-					.userReference(studentUser.getUserId())
-					.progressReport(savedReport)
-					.reference(UUID.randomUUID().toString())
-					.build();
-
-
-			studentRepository.save(studentUser);
-
-			Supervisor supervisorUser = new Supervisor("supervisor name", supervisorSecuredUser.getReference());
-			supervisorUser.getStudents().add(studentUser);
-
-			supervisorRepository.save(supervisorUser);
-
-			Admin adminUser = new Admin("admin name", adminSecuredUser.getReference());
-			adminRepository.save(adminUser);
-
-
-			studentUser.setSupervisor(supervisorUser.getName());
-
-			projectRepository.save(project);
-
-			Comment taskComment = Comment.builder()
-					.content(faker.lorem().sentence(26))
-					.createdAt(LocalDateTime.now())
-					.user(supervisorUser.getName())
-					.reference(UUID.randomUUID().toString())
-					.build();
-
-			Comment saved = commentRepository.save(taskComment);
-			task2.getComments().add(saved);
-
-			Comment comment = Comment.builder()
-					.content(faker.lorem().sentence(26))
-					.createdAt(LocalDateTime.now())
-					.user(supervisorUser.getName())
-					.reference(UUID.randomUUID().toString())
-					.build();
-
-			Comment comment2 = Comment.builder()
-					.content(faker.lorem().sentence(26))
-					.createdAt(LocalDateTime.now())
-					.user(supervisorUser.getName())
-					.reference(UUID.randomUUID().toString())
-					.build();
-
-			commentRepository.saveAll(List.of(comment, comment2));
-			task2.getComments().addAll(commentRepository.saveAll(List.of(comment, comment2)));
-
-			taskRepository.saveAll(List.of(task, task2));
+//			init(userRepository, faker, projectRepository, progressReportRepository, taskRepository, studentRepository, supervisorRepository, adminRepository, progressReportStageRepository, commentRepository);
 
 		};
+	}
+
+	private static void init(UserRepository userRepository, Faker faker, ProjectRepository projectRepository, ProgressReportRepository progressReportRepository, TaskRepository taskRepository, StudentRepository studentRepository, SupervisorRepository supervisorRepository, AdminRepository adminRepository, ProgressReportStageRepository progressReportStageRepository, CommentRepository commentRepository) {
+		SecuredUser studentSecuredUser = userRepository.save(
+				new SecuredUser(
+						"student",
+						"password",
+						UserRole.STUDENT));
+
+		SecuredUser adminSecuredUser = userRepository.save(
+				new SecuredUser(
+						"admin",
+						"password",
+						UserRole.ADMIN));
+
+		SecuredUser supervisorSecuredUser = userRepository.save(
+				new SecuredUser(
+						"supervisor",
+						"password",
+						UserRole.SUPERVISOR));
+
+
+		Student studentUser = new Student("student name", studentSecuredUser.getReference(), studentSecuredUser.getUsername());
+		studentUser.setSupervisor(supervisorSecuredUser.getReference());
+
+
+		Task task = Task.builder()
+				.description(faker.lorem().sentence(20))
+				.title(faker.lorem().sentence(5))
+				.createdAt(LocalDateTime.now())
+				.expectedDeliveryDate(LocalDateTime.now().plusDays(1))
+				.status(EntityStatus.INITIATED)
+				.reference(UUID.randomUUID().toString())
+				.comments(new ArrayList<>())
+				.build();
+
+		Task task2 = Task.builder()
+				.description(faker.lorem().sentence(20))
+				.title(faker.lorem().sentence(5))
+				.createdAt(LocalDateTime.now())
+				.expectedDeliveryDate(LocalDateTime.now().plusDays(1))
+				.status(EntityStatus.INITIATED)
+				.reference(UUID.randomUUID().toString())
+				.comments(new ArrayList<>())
+				.build();
+
+		List<Task> savedTasks = taskRepository.saveAll(List.of(task, task2));
+
+		ProgressReportStage stage1 = ProgressReportStage.builder()
+				.name("Chapter 1")
+				.tasks(new ArrayList<>(List.of(savedTasks.get(0))))
+				.reference(UUID.randomUUID().toString())
+				.build();
+
+		ProgressReportStage stage2 = ProgressReportStage.builder()
+				.name("Chapter 2")
+				.tasks(new ArrayList<>(List.of(savedTasks.get(1))))
+				.reference(UUID.randomUUID().toString())
+				.build();
+		List<ProgressReportStage> progressReportStages = progressReportStageRepository.saveAll(List.of(stage1, stage2));
+
+		ProgressReport progressReport = ProgressReport.builder()
+				.stages(progressReportStages)
+				.build();
+
+		ProgressReport savedReport = progressReportRepository.save(progressReport);
+
+		Project project = Project.builder()
+				.description(faker.lorem().sentence(25))
+				.title(faker.lorem().sentence(5))
+				.status(EntityStatus.INITIATED)
+				.userReference(studentUser.getUserId())
+				.progressReport(savedReport)
+				.reference(UUID.randomUUID().toString())
+				.build();
+
+
+		studentRepository.save(studentUser);
+
+		Supervisor supervisorUser = new Supervisor("supervisor name", supervisorSecuredUser.getReference());
+		supervisorUser.getStudents().add(studentUser);
+
+		supervisorRepository.save(supervisorUser);
+
+		Admin adminUser = new Admin("admin name", adminSecuredUser.getReference());
+		adminRepository.save(adminUser);
+
+
+		studentUser.setSupervisor(supervisorUser.getName());
+
+		projectRepository.save(project);
+
+		Comment taskComment = Comment.builder()
+				.content(faker.lorem().sentence(26))
+				.createdAt(LocalDateTime.now())
+				.user(supervisorUser.getName())
+				.reference(UUID.randomUUID().toString())
+				.build();
+
+		Comment saved = commentRepository.save(taskComment);
+		task2.getComments().add(saved);
+
+		Comment comment = Comment.builder()
+				.content(faker.lorem().sentence(26))
+				.createdAt(LocalDateTime.now())
+				.user(supervisorUser.getName())
+				.reference(UUID.randomUUID().toString())
+				.build();
+
+		Comment comment2 = Comment.builder()
+				.content(faker.lorem().sentence(26))
+				.createdAt(LocalDateTime.now())
+				.user(supervisorUser.getName())
+				.reference(UUID.randomUUID().toString())
+				.build();
+
+		commentRepository.saveAll(List.of(comment, comment2));
+		task2.getComments().addAll(commentRepository.saveAll(List.of(comment, comment2)));
+
+		taskRepository.saveAll(List.of(task, task2));
 	}
 }

@@ -2,21 +2,21 @@ package com.clicks.project_monitoring.service;
 
 import com.clicks.project_monitoring.dtos.requests.task.CreateTaskRequest;
 import com.clicks.project_monitoring.dtos.requests.task.NewTask;
+import com.clicks.project_monitoring.dtos.response.TaskDto;
 import com.clicks.project_monitoring.enums.EntityStatus;
 import com.clicks.project_monitoring.exceptions.InvalidParamException;
 import com.clicks.project_monitoring.exceptions.ResourceNotFoundException;
 import com.clicks.project_monitoring.model.ProgressReportStage;
 import com.clicks.project_monitoring.model.Task;
 import com.clicks.project_monitoring.repositories.TaskRepository;
+import com.clicks.project_monitoring.utils.DtoMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final ProgressReportStageService progressReportStageService;
+    private final DtoMapper mapper;
 
 
     @Transactional
@@ -74,9 +75,10 @@ public class TaskService {
         return "Task(s) added successfully";
     }
 
-    private Task createNew(NewTask newTask, String stageReference) {
+    public Task createNew(NewTask newTask, String stageReference) {
         Task task = Task.builder()
                 .stageReference(stageReference)
+                .reference(UUID.randomUUID().toString())
                 .description(newTask.description())
                 .createdAt(LocalDateTime.now())
                 .title(newTask.title())
@@ -91,11 +93,23 @@ public class TaskService {
         try {
             return LocalDateTime.parse(date);
         }catch (DateTimeParseException e) {
-            throw new InvalidParamException("Invalid date: Use either \"yyyy-MM-dd\" or \"yyyy-MM-dd HH:mm:ss\".");
+            throw new InvalidParamException("Invalid date: Use either yyyy-MM-dd or yyyy-MM-dd HH:mm:ss.");
         }
     }
 
     public boolean existByReference(String taskReference) {
         return taskRepository.existsByReference(taskReference);
+    }
+
+    public List<TaskDto> getTasksForStage(String stageReference) {
+        ProgressReportStage stage = progressReportStageService.getStage(stageReference);
+        return stage.getTasks().stream()
+                .sorted(Comparator.comparing(Task::getCreatedAt).reversed())
+                .map(mapper::taskToTaskDto)
+                .toList();
+    }
+
+    public TaskDto getTask(String taskReference) {
+        return mapper.taskToTaskDto(findByReference(taskReference));
     }
 }

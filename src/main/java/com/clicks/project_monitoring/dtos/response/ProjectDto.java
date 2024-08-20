@@ -5,6 +5,8 @@ public record ProjectDto(
         String userReference,
         String title,
         String description,
-        String status
+        String status,
+        String projectFile,
+        ProgressReportDto progressReport
 ) {
 }

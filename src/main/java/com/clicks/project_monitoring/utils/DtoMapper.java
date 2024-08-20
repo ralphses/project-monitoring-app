@@ -4,6 +4,7 @@ import com.clicks.project_monitoring.dtos.response.*;
 import com.clicks.project_monitoring.dtos.response.user.AdminDto;
 import com.clicks.project_monitoring.dtos.response.user.StudentDto;
 import com.clicks.project_monitoring.dtos.response.user.SupervisorDto;
+import com.clicks.project_monitoring.enums.EntityStatus;
 import com.clicks.project_monitoring.enums.UserRole;
 import com.clicks.project_monitoring.model.*;
 import com.clicks.project_monitoring.model.user.Admin;
@@ -12,6 +13,7 @@ import com.clicks.project_monitoring.model.user.Supervisor;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Objects;
 
 @Component
@@ -45,7 +47,8 @@ public class DtoMapper {
                 student.getEmail(),
                 UserRole.STUDENT.name(),
                 Objects.nonNull(student.getProject()) ? projectDto(student.getProject()) : null,
-                student.getSupervisor()
+                student.getSupervisor(),
+                student.getMatric()
         );
     }
 
@@ -55,15 +58,21 @@ public class DtoMapper {
                 project.getUserReference(),
                 project.getTitle(),
                 project.getDescription(),
-                project.getStatus().name()
+                project.getStatus().name(),
+                project.getProjectFile(),
+                progressReportDto(project.getProgressReport())
         );
 
     }
 
     public ProgressReportDto progressReportDto(ProgressReport progressReport) {
+        if (progressReport == null) {
+            return null;
+        }
         return new ProgressReportDto(
                 progressReport.getReference(),
                 progressReport.getStages().stream()
+                        .sorted(Comparator.comparing(ProgressReportStage::getCreatedAt).reversed())
                         .map(this::progressReportStageDto)
                         .toList()
         );
@@ -74,9 +83,11 @@ public class DtoMapper {
                 progressReportStage.getReference(),
                 progressReportStage.getName(),
                 progressReportStage.isCompleted(),
-                progressReportStage.getCompletionDate().format(DATE_FORMATTER),
+                progressReportStage.getCompletionDate() != null ? progressReportStage.getCompletionDate().format(DATE_FORMATTER) : "",
                 progressReportStage.getLevel(),
                 progressReportStage.getTasks().stream()
+                        .filter(task -> !task.getStatus().equals(EntityStatus.COMPLETED))
+                        .sorted(Comparator.comparing(Task::getCreatedAt).reversed())
                         .map(this::taskToTaskDto)
                         .toList()
         );
@@ -168,7 +179,9 @@ public class DtoMapper {
                 task.getCreatedAt().format(DATE_FORMATTER),
                 task.getExpectedDeliveryDate().format(DATE_FORMATTER),
                 task.getComments().stream()
+                        .sorted(Comparator.comparing(Comment::getCreatedAt).reversed())
                         .map(this::commentToCommentDto)
+                        .limit(10)
                         .toList());
     }
 //

@@ -22,6 +22,7 @@ public class ProgressReportStage {
     private String name;
     private boolean completed;
     private LocalDateTime completionDate;
+    private LocalDateTime createdAt;
     private int level;
     private int totalTasks;
 

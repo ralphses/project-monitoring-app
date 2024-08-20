@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import StudentDashboard from './Student';
 import AdminDashboard from './Admin';
 import SupervisorDashboard from './Supervisor';
@@ -7,24 +7,24 @@ import { motion } from 'framer-motion';
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const username = 'student2';
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/v1/users/${username}`);
-                setUser(response.data.data);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
+        // Fetch user from session storage
+        const storedUser = sessionStorage.getItem('user');
+
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+
+            console.log(parsedUser);
+
+            // Check if the user is a student and has no project
+            if (parsedUser.role === 'STUDENT' && !parsedUser.project) {
+                navigate('/dashboard/create-project');
             }
-        };
-
-        if (username) {
-            fetchUser();
         }
-    }, []);
-
-    // console.log(user)
+    }, [navigate]);
 
     if (!user) {
         return (

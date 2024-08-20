@@ -14,4 +14,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Optional<Task> findByReference(String reference);
     boolean existsByReference(String reference);
+    Task findTopByStageReferenceOrderByCreatedAtDesc(String reference);
 }

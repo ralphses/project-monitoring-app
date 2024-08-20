@@ -18,8 +18,10 @@ public class Student extends User {
     @OneToOne(fetch = FetchType.LAZY)
     private Project project;
     private String supervisor;
+    private String matric;
 
-    public Student(String name, String userReference) {
+    public Student(String name, String userReference, String matric) {
         super(userReference, name);
+        this.matric = matric;
     }
 }

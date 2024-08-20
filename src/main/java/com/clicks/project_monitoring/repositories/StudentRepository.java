@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByUserId(String userId);
+    Optional<Student> findByMatric(String matric);
     Page<Student> findAllBySupervisor(String supervisorId, Pageable pageable);
 
 }
