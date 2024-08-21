@@ -1,6 +1,6 @@
 // src/components/TaskDetailsPage.js
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,9 +12,9 @@ const TaskDetailsPage = () => {
     const userReference = JSON.parse(sessionStorage.getItem('user')).reference; // Get user reference from session
     const navigate = useNavigate(); // For navigating back to the progress report page
 
-    const fetchTaskDetails = async () => {
+    const fetchTaskDetails = useCallback(async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/tasks/${reference}`);
+            const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/tasks/${reference}`);
             if (response.data.success) {
                 setTask(response.data.data);
             } else {
@@ -25,11 +25,11 @@ const TaskDetailsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [reference]);
 
     useEffect(() => {
         fetchTaskDetails();
-    }, [reference]);
+    }, [fetchTaskDetails]);
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
@@ -40,7 +40,7 @@ const TaskDetailsPage = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/comments', {
+            const response = await axios.post('https://project-app-api.up.railway.app/api/v1/comments', {
                 taskReference: reference,
                 userReference,
                 comment: newComment

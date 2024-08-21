@@ -18,8 +18,8 @@ const TasksPage = () => {
     useEffect(() => {
         const userReference = user?.reference;
         const url = userReference
-            ? `http://localhost:8080/api/v1/tasks?page=${currentPage}&user=${userReference}`
-            : `http://localhost:8080/api/v1/tasks?page=${currentPage}`;
+            ? `https://project-app-api.up.railway.app/api/v1/tasks?page=${currentPage}&user=${userReference}`
+            : `https://project-app-api.up.railway.app/api/v1/tasks?page=${currentPage}`;
 
         axios.get(url)
             .then((response) => {

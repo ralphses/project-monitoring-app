@@ -14,7 +14,7 @@ const AdminDashboard = () => {
         // Fetch paginated list of supervisors
         const fetchSupervisors = async (page) => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/users/supervisors`, {
+                const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/users/supervisors`, {
                     params: {
                         page: page,
                     },

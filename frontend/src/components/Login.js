@@ -46,7 +46,7 @@ const LoginPage = () => {
 
 
         // Send data to the backend
-        const response = await axios.post('http://localhost:8080/api/v1/auth/login', dataToSend);
+        const response = await axios.post('https://project-app-api.up.railway.app/api/v1/auth/login', dataToSend);
 
         if (response.data.success) {
           // Store user data in session storage

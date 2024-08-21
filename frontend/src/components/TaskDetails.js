@@ -18,7 +18,7 @@ const TaskDetails = () => {
         // Fetch the task details from the API
         const fetchTaskDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/tasks/${taskReference}`);
+                const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/tasks/${taskReference}`);
                 setTask(response.data.data); // Assuming the data is in `data` field of response
                 setLoading(false);
             } catch (error) {
@@ -40,13 +40,13 @@ const TaskDetails = () => {
         const userReference = JSON.parse(sessionStorage.getItem('user')).reference; // Replace with actual user reference logic
         console.log(userReference);
         try {
-            await axios.post('http://localhost:8080/api/v1/comments', {
+            await axios.post('https://project-app-api.up.railway.app/api/v1/comments', {
                 userReference,
                 taskReference,
                 comment,
             });
             // After successful submission, fetch updated task details
-            const response = await axios.get(`http://localhost:8080/api/v1/tasks/${taskReference}`);
+            const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/tasks/${taskReference}`);
             setTask(response.data.data);
             setComment(''); // Clear the comment input
         } catch (error) {
@@ -59,7 +59,7 @@ const TaskDetails = () => {
     const handleMarkAsCompleted = async () => {
         setMarkingAsCompleted(true);
         try {
-            const response = await axios.put(`http://localhost:8080/api/v1/tasks?task=${taskReference}&status=COMPLETED`);
+            const response = await axios.put(`https://project-app-api.up.railway.app/api/v1/tasks?task=${taskReference}&status=COMPLETED`);
             if (response.data.success) {
                 // Update the task status locally after a successful response
                 setTask(prevTask => ({ ...prevTask, status: 'COMPLETED' }));

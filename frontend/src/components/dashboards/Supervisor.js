@@ -19,7 +19,7 @@ const SupervisorDashboard = () => {
         // Fetch students assigned to this supervisor
         const fetchStudents = async (page) => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/users/students', {
+                const response = await axios.get('https://project-app-api.up.railway.app/api/v1/users/students', {
                     params: {
                         page: page,
                         supervisorReference: supervisorReference,
@@ -36,7 +36,7 @@ const SupervisorDashboard = () => {
         // Fetch notifications for the supervisor
         const fetchNotifications = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/notifications', {
+                const response = await axios.get('https://project-app-api.up.railway.app/api/v1/notifications', {
                     params: {
                         supervisorReference: supervisorReference
                     },

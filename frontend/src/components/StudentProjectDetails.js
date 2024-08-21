@@ -16,18 +16,18 @@ const StudentProjectDetails = () => {
         // Fetch the project, latest task, and latest comment details
         const fetchProjectDetails = async () => {
             try {
-                const projectResponse = await axios.get('http://localhost:8080/api/v1/project/student', {
+                const projectResponse = await axios.get('https://project-app-api.up.railway.app/api/v1/project/student', {
                     params: { reference: studentReference },
                 });
                 setProject(projectResponse.data.data);
 
-                const latestTaskResponse = await axios.get('http://localhost:8080/api/v1/project/latest-task', {
+                const latestTaskResponse = await axios.get('https://project-app-api.up.railway.app/api/v1/project/latest-task', {
                     params: { projectReference: projectResponse.data.data.reference },
                 });
                 setLatestTask(latestTaskResponse.data.data.task);
                 setTaskStatus(latestTaskResponse.data.data.status);
 
-                const latestCommentResponse = await axios.get('http://localhost:8080/api/v1/project/latest-comment', {
+                const latestCommentResponse = await axios.get('https://project-app-api.up.railway.app/api/v1/project/latest-comment', {
                     params: { projectReference: projectResponse.data.data.reference },
                 });
                 setLatestComment(latestCommentResponse.data.data.comment);
@@ -42,7 +42,7 @@ const StudentProjectDetails = () => {
     const handleApproveOrDisapprove = async () => {
         const newStatus = project.status === 'INITIATED' || project.status === 'IN_PROGRESS' ? 'DECLINED' : 'IN_PROGRESS';
         try {
-            await axios.put('http://localhost:8080/api/v1/project/update-status', null, {
+            await axios.put('https://project-app-api.up.railway.app/api/v1/project/update-status', null, {
                 params: {
                     projectReference: project.reference,
                     newStatus: newStatus,
@@ -72,7 +72,7 @@ const StudentProjectDetails = () => {
     const downloadProjectFile = async () => {
         try {
             if (project.projectFile) {
-                const response = await axios.get('http://localhost:8080/api/v1/project/download', {
+                const response = await axios.get('https://project-app-api.up.railway.app/api/v1/project/download', {
                     params: { projectReference: project.reference },
                     responseType: 'blob', // Important to handle the file download
                 });

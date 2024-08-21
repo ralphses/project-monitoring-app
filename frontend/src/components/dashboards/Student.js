@@ -20,7 +20,7 @@ const StudentDashboard = ({ user }) => {
     });
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/v1/project/latest-task?projectReference=${user.project.reference}`)
+        axios.get(`https://project-app-api.up.railway.app/api/v1/project/latest-task?projectReference=${user.project.reference}`)
             .then(response => {
                 setLatestTask(response.data.data);
             })
@@ -28,14 +28,14 @@ const StudentDashboard = ({ user }) => {
                 console.error('Error fetching latest task:', error);
             });
 
-        axios.get(`http://localhost:8080/api/v1/project/latest-comment?projectReference=${user.project.reference}`)
+        axios.get(`https://project-app-api.up.railway.app/api/v1/project/latest-comment?projectReference=${user.project.reference}`)
             .then(response => {
                 setLatestComment(response.data.data);
             })
             .catch(error => {
                 console.error('Error fetching latest comment:', error);
             });
-    }, [user.id]);
+    }, [user.project.reference]);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -50,7 +50,7 @@ const StudentDashboard = ({ user }) => {
         const formData = new FormData();
         formData.append('file', file);
 
-        axios.put(`http://localhost:8080/api/v1/project/${user.reference}`, formData)
+        axios.put(`https://project-app-api.up.railway.app/api/v1/project/${user.reference}`, formData)
             .then(response => {
                 setUploadSuccess('File uploaded successfully.');
                 setUploadError(null);

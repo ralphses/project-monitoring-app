@@ -14,7 +14,7 @@ const AssignStudentPage = () => {
     // Fetch student details based on matric number
     const fetchStudentDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/users/student/${matric}`);
+            const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/users/student/${matric}`);
             setStudent(response.data.data);
             setError('');
             setShowModal(true);
@@ -28,7 +28,7 @@ const AssignStudentPage = () => {
     // Handle the assignment of the student to the supervisor
     const handleAssignSupervisor = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/assign-supervisor', {
+            const response = await axios.post('https://project-app-api.up.railway.app/api/v1/users/assign-supervisor', {
                 supervisor: reference,
                 student: student.matric, // or use another identifier like student.id if available
             });

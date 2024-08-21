@@ -15,14 +15,14 @@ const ProgressReport = ({ onLogout, onBackToDashboard }) => {
         // Fetch progress report from server using project reference
         const fetchProgressData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/progress-report/${user.project.reference}`);
+                const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/progress-report/${user.project.reference}`);
                 if (response.data.success) {
                     const stages = response.data.data.stages;
 
                     // Fetch level for each stage and update stage data
                     const stagesWithLevels = await Promise.all(stages.map(async (stage) => {
                         try {
-                            const levelResponse = await axios.get(`http://localhost:8080/api/v1/progress-report/stages/level?stageReference=${stage.reference}`);
+                            const levelResponse = await axios.get(`https://project-app-api.up.railway.app/api/v1/progress-report/stages/level?stageReference=${stage.reference}`);
                             if (levelResponse.data.success) {
                                 console.log(levelResponse.data.data)
                                 return { ...stage, level: levelResponse.data.data };

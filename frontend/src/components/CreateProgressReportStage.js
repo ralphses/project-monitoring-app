@@ -64,7 +64,7 @@ const CreateProgressReportStage = () => {
         event.preventDefault();
         console.log(stages);
         try {
-            await axios.post('http://localhost:8080/api/v1/progress-report/stages', {
+            await axios.post('https://project-app-api.up.railway.app/api/v1/progress-report/stages', {
                 projectReference,
                 stages: stages.map(stage => ({
                     stage: stage.stage,

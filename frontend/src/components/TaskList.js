@@ -13,7 +13,7 @@ const TaskList = () => {
         const fetchTasks = async () => {
             try {
                 // Updated the API request to match the new endpoint
-                const response = await axios.get(`http://localhost:8080/api/v1/tasks?stageReference=${stageReference}`);
+                const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/tasks?stageReference=${stageReference}`);
 
                 if (response.data.success) {
                     // Updated to match the response structure

@@ -24,7 +24,7 @@ const CreateProject = () => {
             description,
         };
 
-        axios.post('http://localhost:8080/api/v1/project', projectDetails)
+        axios.post('https://project-app-api.up.railway.app/api/v1/project', projectDetails)
             .then(response => {
                 // Update the user object in session storage with the new project
                 const user = response.data.data;

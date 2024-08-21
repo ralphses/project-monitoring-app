@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${DATABASE_STAGING_HOST}:${DATABASE_STAGING_PORT}/${DATABASE_STAGING_NAME}
+    password: ${DATABASE_STAGING_PASSWORD}
+    username: ${DATABASE_STAGING_USERNAME}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update

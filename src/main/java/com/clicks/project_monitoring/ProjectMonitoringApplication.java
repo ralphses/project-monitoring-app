@@ -41,7 +41,7 @@ public class ProjectMonitoringApplication {
 		return args -> {
 
 			// Seed users
-//			init(userRepository, faker, projectRepository, progressReportRepository, taskRepository, studentRepository, supervisorRepository, adminRepository, progressReportStageRepository, commentRepository);
+			init(userRepository, faker, projectRepository, progressReportRepository, taskRepository, studentRepository, supervisorRepository, adminRepository, progressReportStageRepository, commentRepository);
 
 		};
 	}

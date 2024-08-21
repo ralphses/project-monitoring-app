@@ -72,7 +72,7 @@ const RegisterPage = () => {
         console.log(dataToSend);
 
         // Send data to the backend
-        const response = await axios.post('http://localhost:8080/api/v1/auth/register', dataToSend);
+        const response = await axios.post('https://project-app-api.up.railway.app/api/v1/auth/register', dataToSend);
 
         if (response.data.success) {
           setShowModal(true);

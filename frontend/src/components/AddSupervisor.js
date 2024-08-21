@@ -16,7 +16,7 @@ const AddSupervisor = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/add-supervisor', {
+            const response = await axios.post('https://project-app-api.up.railway.app/api/v1/users/add-supervisor', {
                 name,
                 userName,
                 password,

@@ -11,7 +11,7 @@ const ProgressReportDetails = () => {
         // Fetch the progress report details
         const fetchProgressReport = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/progress-report/${projectReference}`);
+                const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/progress-report/${projectReference}`);
                 setProgressReport(response.data.data);
             } catch (error) {
                 console.error('Error fetching progress report:', error);
@@ -31,7 +31,7 @@ const ProgressReportDetails = () => {
 
     const handleMarkAsCompleted = async (stageReference) => {
         try {
-            const response = await axios.put('http://localhost:8080/api/v1/progress-report/stages', {
+            const response = await axios.put('https://project-app-api.up.railway.app/api/v1/progress-report/stages', {
                 reference: stageReference,
                 newStatus: 'COMPLETED',
             });

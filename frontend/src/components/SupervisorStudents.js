@@ -15,7 +15,7 @@ const SupervisorStudents = () => {
         // Fetch paginated list of students for the supervisor
         const fetchStudents = async (page) => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/users/students', {
+                const response = await axios.get('https://project-app-api.up.railway.app/api/v1/users/students', {
                     params: {
                         page: page,
                         supervisorReference: reference,

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
 const StageTasks = () => {
-    const { projectReference, stageReference } = useParams(); // Get project and stage references from URL
+    const { projectReference } = useParams(); // Get project and stage references from URL
     const [tasks, setTasks] = useState([]);
     const [stageName, setStageName] = useState(''); // Assuming the stage name is provided by your backend
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const StageTasks = () => {
         // Fetch the list of tasks for the specified stage
         const fetchTasks = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/tasks?stageReference=${stageReference}`);
+                const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/tasks?stageReference=${projectReference}`);
 
                 // Extract data from the custom response
                 const tasksData = response.data.data;
@@ -31,7 +31,7 @@ const StageTasks = () => {
         };
 
         fetchTasks();
-    }, [stageReference]);
+    }, [projectReference]);
 
     const goBack = () => {
         navigate(-1); // Navigate back to the previous page
