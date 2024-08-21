@@ -6,6 +6,6 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
-  profiles:
-    active: dev
+      ddl-auto: create-drop
+#  profiles:
+#    active: dev

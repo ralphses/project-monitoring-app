@@ -14,7 +14,9 @@ const AssignStudentPage = () => {
     // Fetch student details based on matric number
     const fetchStudentDetails = async () => {
         try {
-            const response = await axios.get(`https://project-app-api.up.railway.app/api/v1/users/student/${matric}`);
+            const response = await axios.post(`https://project-app-api.up.railway.app/api/v1/users/student`, {
+                matric: matric
+            });
             setStudent(response.data.data);
             setError('');
             setShowModal(true);

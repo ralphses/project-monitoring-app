@@ -1,6 +1,7 @@
 package com.clicks.project_monitoring.controllers;
 
 import com.clicks.project_monitoring.dtos.requests.user.AssignSupervisorRequest;
+import com.clicks.project_monitoring.dtos.requests.user.FetchStudentByMatricRequest;
 import com.clicks.project_monitoring.dtos.requests.user.NewSupervisorRequest;
 import com.clicks.project_monitoring.dtos.response.AllSupervisorResponse;
 import com.clicks.project_monitoring.dtos.response.user.AllStudentsResponse;
@@ -52,9 +53,10 @@ public class UserController {
         return new CustomResponse(true, profile);
     }
 
-    @GetMapping("student/{matric}")
-    public CustomResponse getStudentByMatric(@PathVariable String matric) {
-        StudentDto profile = userService.getStudentByMatric(matric);
+    @PostMapping("student")
+    public CustomResponse getStudentByMatric(@RequestBody FetchStudentByMatricRequest request) {
+        System.out.println("request = " + request);
+        StudentDto profile = userService.getStudentByMatric(request.matric());
         return new CustomResponse(true, profile);
     }
 }
