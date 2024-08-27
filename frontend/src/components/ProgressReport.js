@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-const ProgressReport = ({ onLogout, onBackToDashboard }) => {
+const ProgressReport = () => {
     const [progressData, setProgressData] = useState([]);
     const [loading, setLoading] = useState(true);
     const user = JSON.parse(sessionStorage.getItem('user'));
@@ -49,6 +49,17 @@ const ProgressReport = ({ onLogout, onBackToDashboard }) => {
 
         fetchProgressData();
     }, [user.project.reference]);
+
+    // Function to handle logout
+    const handleLogout = () => {
+        sessionStorage.clear();
+        navigate('/');
+    };
+
+    // Function to handle back to dashboard
+    const handleBackToDashboard = () => {
+        navigate('/dashboard');
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 p-4">
@@ -104,13 +115,13 @@ const ProgressReport = ({ onLogout, onBackToDashboard }) => {
             <div className="flex space-x-4">
                 <button
                     className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-                    onClick={onBackToDashboard}
+                    onClick={handleBackToDashboard}
                 >
                     Back to Dashboard
                 </button>
                 <button
                     className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-                    onClick={onLogout}
+                    onClick={handleLogout}
                 >
                     Logout
                 </button>

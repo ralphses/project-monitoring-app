@@ -61,6 +61,30 @@ const StudentDashboard = ({ user }) => {
             });
     };
 
+    const downloadProjectFile = async () => {
+        try {
+            if (user.project && user.project.reference) {
+                const response = await axios.get('https://project-app-api.up.railway.app/api/v1/project/download', {
+                    params: { projectReference: user.project.reference },
+                    responseType: 'blob', // Important to handle the file download
+                });
+
+                // Create a URL for the file and trigger the download
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', user.project.projectFile); // Use the projectFile name from DTO
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            } else {
+                console.error('No project file available for download.');
+            }
+        } catch (error) {
+            console.error('Error downloading project file:', error);
+        }
+    };
+
     const handleLogout = () => {
         sessionStorage.clear();
         navigate('/');
@@ -71,7 +95,6 @@ const StudentDashboard = ({ user }) => {
             {/* Hero Section */}
             <header className="bg-indigo-600 text-white py-12">
                 <div className="container mx-auto px-6 text-center">
-                    {/*<h1 className="text-5xl font-bold">Welcome, {user.name}!</h1>*/}
                     <p className="text-2xl mt-4">Project Topic: {user.project.title}</p>
                     <div className="mt-8">
                         <motion.div
@@ -148,7 +171,7 @@ const StudentDashboard = ({ user }) => {
                     </motion.div>
                 </div>
 
-                {/* File Upload Section */}
+                {/* File Upload and Download Section */}
                 <motion.div
                     className="bg-white p-8 rounded-lg shadow-lg mt-8"
                     initial={{ opacity: 0, y: 20 }}
@@ -198,15 +221,18 @@ const StudentDashboard = ({ user }) => {
                     {uploadError && (
                         <p className="text-red-600 mt-4 text-lg text-center">{uploadError}</p>
                     )}
+                    <div className="text-center mt-8">
+                        <motion.button
+                            onClick={downloadProjectFile}
+                            className={`bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105`}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            Download Latest Corrected Project File
+                        </motion.button>
+                    </div>
                 </motion.div>
             </section>
-
-            {/* Footer */}
-            <footer className="bg-gray-800 text-white py-6 mt-auto">
-                <div className="container mx-auto px-6 text-center">
-                    <p className="text-sm">&copy; 2024 Your Dashboard. All rights reserved.</p>
-                </div>
-            </footer>
         </div>
     );
 };

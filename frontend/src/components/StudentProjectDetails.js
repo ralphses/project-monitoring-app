@@ -10,6 +10,9 @@ const StudentProjectDetails = () => {
     const [latestComment, setLatestComment] = useState('');
     const [latestTask, setLatestTask] = useState('');
     const [taskStatus, setTaskStatus] = useState('');
+    const [file, setFile] = useState(null); // State for handling the file upload
+    const [uploadError, setUploadError] = useState(null);
+    const [uploadSuccess, setUploadSuccess] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -69,6 +72,26 @@ const StudentProjectDetails = () => {
         navigate(-1); // Navigates to the previous page
     };
 
+    const handleFileUpload = async () => {
+        if (!file) {
+            setUploadError('Please select a file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            await axios.put(`https://project-app-api.up.railway.app/api/v1/project/${studentReference}`, formData);
+            setUploadSuccess('File uploaded successfully.');
+            setUploadError(null);
+        } catch (error) {
+            setUploadError('Failed to upload file.');
+            setUploadSuccess(null);
+            console.error('Error uploading project file:', error);
+        }
+    };
+
     const downloadProjectFile = async () => {
         try {
             if (project.projectFile) {
@@ -124,16 +147,40 @@ const StudentProjectDetails = () => {
                 >
                     {isApproved ? 'Decline' : 'Approve'}
                 </button>
+            </div>
 
-                <button
-                    onClick={downloadProjectFile}
-                    className={`mt-4 px-4 py-2 rounded-lg ${
-                        project.projectFile && !isInitiated ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                    }`}
-                    disabled={!project.projectFile || isInitiated}
-                >
-                    {project.projectFile ? 'Download Project File' : 'Project File Not Uploaded'}
-                </button>
+            <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
+                <h3 className="text-xl font-semibold mb-4">Project Files</h3>
+
+                <div>
+                    <button
+                        onClick={downloadProjectFile}
+                        className={`px-4 py-2 rounded-lg ${
+                            project.projectFile && !isInitiated ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        }`}
+                        disabled={!project.projectFile || isInitiated}
+                    >
+                        {project.projectFile ? 'Download Project File' : 'Project File Not Uploaded'}
+                    </button>
+                </div>
+                <div className="mb-4">
+                    <h4 className="text-lg font-semibold mb-2">Upload Project File (Corrected Version)</h4>
+                    <input
+                        type="file"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        className="block mb-2"
+                    />
+                    <button
+                        onClick={handleFileUpload}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                    >
+                        Upload
+                    </button>
+                    {uploadError && <p className="text-red-500 mt-2">{uploadError}</p>}
+                    {uploadSuccess && <p className="text-green-500 mt-2">{uploadSuccess}</p>}
+                </div>
+
+
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
